@@ -15,3 +15,6 @@ rand64-hw functions.
 
 Along the way, I modified the make file to have $^, and
 added options.c and rand64-hw.c to the prerequisite list
+
+I continued to separate the software and output files, and
+my 'make check' ran successfully.
