@@ -1,9 +1,10 @@
 #include "rand64-hw.h"
 #include <immintrin.h>
 
-void
-hardware_rand64_init (void)
+int
+hardware_rand64_init (char *path __attribute__((unused)))
 {
+    return 0;
 }
 
 /* Return a random value, using hardware operations.  */

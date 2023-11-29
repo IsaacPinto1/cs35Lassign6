@@ -5,12 +5,13 @@
 
 FILE *urandstream;
 
-void
-software_rand64_init (void)
-{
-  urandstream = fopen ("/dev/random", "r");
-  if (! urandstream)
-    abort ();
+int software_rand64_init(char *path) {
+    urandstream = fopen(path, "r");
+    if (!urandstream) {
+        perror("Error opening random file");
+        return 1;
+    }
+    return 0;
 }
 
 /* Return a random value, using software operations.  */
@@ -28,4 +29,20 @@ void
 software_rand64_fini (void)
 {
   fclose (urandstream);
+}
+
+int arc4random_init(char *path __attribute__((unused))) {
+    // Your initialization code here
+}
+
+// Function to generate a random 64-bit number using arc4random_buf
+unsigned long long arc4random_rand64(void) {
+    unsigned long long result;
+    arc4random_buf(&result, sizeof(result));
+    return result;
+}
+
+// Function to finalize arc4random
+void arc4random_fini(void) {
+    // Your finalization code here
 }

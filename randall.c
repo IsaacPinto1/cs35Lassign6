@@ -29,6 +29,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "options.h"
 #include "output.h"
 #include "rand64-hw.h"
@@ -71,13 +73,48 @@ main (int argc, char **argv)
   int nbytes = check(argc, argv);
   if (nbytes == 0)
     return 0;
+  if (nbytes < 0){
+    return 1;
+  }
+  int opt;
+  char *input = "none";
+  //char *output = "none";
+  while ((opt = getopt(argc, argv, "i:o:")) != -1) {
+        switch (opt) {
+        case 'i':
+            input = optarg;
+            break;
+        case 'o':
+            //output = optarg;
+            break;
+        default:
+            fprintf(stderr, "Usage: %s -i input -o output\n", argv[0]);
+            exit(EXIT_FAILURE);
+        }
+  }
 
-  /* Now that we know we have work to do, arrange to use the
-     appropriate library.  */
-  void (*initialize) (void);
+  int (*initialize) (char *path);
   unsigned long long (*rand64) (void);
   void (*finalize) (void);
-  if (rdrand_supported ())
+
+  char *path = "";
+
+  // Check the input option
+  if(strcmp(input, "none") == 0){
+    if (rdrand_supported ())
+    {
+      initialize = hardware_rand64_init;
+      rand64 = hardware_rand64;
+      finalize = hardware_rand64_fini;
+    } else{
+      initialize = software_rand64_init;
+      rand64 = software_rand64;
+      finalize = software_rand64_fini;
+      path = "/dev/null";
+    }
+  }
+  else if (strcmp(input, "rdrand") == 0) {
+      if (rdrand_supported ())
     {
       initialize = hardware_rand64_init;
       rand64 = hardware_rand64;
@@ -85,10 +122,22 @@ main (int argc, char **argv)
     }
   else
     {
+      fprintf(stderr, "rdrand not available\n");
+      return 1;
+    }
+  } else if (strcmp(input, "arc4random_buf") == 0) {
+      initialize = arc4random_init;
+      rand64 = arc4random_rand64;
+      finalize = arc4random_fini;
+  } else if (input[0] == '/') {
       initialize = software_rand64_init;
       rand64 = software_rand64;
       finalize = software_rand64_fini;
-    }
+      path = input;
+  } else {
+      fprintf(stderr, "Invalid input option\n");
+      return 1;
+  }
 
-    return output(initialize, rand64, finalize, nbytes);
+  return outputText(initialize, rand64, finalize, nbytes, path);
 }

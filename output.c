@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <limits.h>
 #include <errno.h>
+#include <string.h>
 #include "output.h"
 
 bool writebytes (unsigned long long x, int nbytes)
@@ -19,8 +20,10 @@ bool writebytes (unsigned long long x, int nbytes)
   return true;
 }
 
-int output(void (*initialize)(void), unsigned long long (*rand64)(void), void (*finalize)(void), int nbytes){
-    initialize ();
+int outputText(int (*initialize)(char *path), unsigned long long (*rand64)(void), void (*finalize)(void), int nbytes, char *path){
+    if(!!initialize(path) == 1){
+        return 1;
+    };
     int wordsize = sizeof rand64 ();
     int output_errno = 0;
 
