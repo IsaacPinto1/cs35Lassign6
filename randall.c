@@ -63,20 +63,6 @@ rdrand_supported (void)
 /* Initialize the hardware rand64 implementation.  */
 
 
-static bool
-writebytes (unsigned long long x, int nbytes)
-{
-  do
-    {
-      if (putchar (x) < 0)
-	return false;
-      x >>= CHAR_BIT;
-      nbytes--;
-    }
-  while (0 < nbytes);
-
-  return true;
-}
 
 /* Main program, which outputs N bytes of random data.  */
 int
@@ -104,30 +90,5 @@ main (int argc, char **argv)
       finalize = software_rand64_fini;
     }
 
-  initialize ();
-  int wordsize = sizeof rand64 ();
-  int output_errno = 0;
-
-  do{
-    unsigned long long x = rand64 ();
-    int outbytes = nbytes < wordsize ? nbytes : wordsize;
-    if (!writebytes (x, outbytes)){
-      output_errno = errno;
-      break;
-    }
-    nbytes -= outbytes;
-  }
-  while (0 < nbytes);
-
-  if (fclose (stdout) != 0)
-    output_errno = errno;
-
-  if (output_errno)
-    {
-      errno = output_errno;
-      perror ("output");
-    }
-
-  finalize ();
-  return !!output_errno;
+    return output(initialize, rand64, finalize, nbytes);
 }
