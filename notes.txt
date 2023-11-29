@@ -1,0 +1,2 @@
+Added a 'check' target to the makefile. I first set a const 'SIZE', and then run randall on that
+SIZE, and check that the output length is the same as SIZE. I counted the output using 'wc -c'

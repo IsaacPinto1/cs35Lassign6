@@ -29,6 +29,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "options.h"
+#include "output.h"
+#include "rand64-hw.h"
+#include "rand64-sw.h"
+
 
 /* Hardware implementation.  */
 
@@ -56,31 +61,7 @@ rdrand_supported (void)
 }
 
 /* Initialize the hardware rand64 implementation.  */
-static void
-hardware_rand64_init (void)
-{
-}
 
-/* Return a random value, using hardware operations.  */
-static unsigned long long
-hardware_rand64 (void)
-{
-  unsigned long long int x;
-
-  /* Work around GCC bug 107565
-     <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=107565>.  */
-  x = 0;
-
-  while (! _rdrand64_step (&x))
-    continue;
-  return x;
-}
-
-/* Finalize the hardware rand64 implementation.  */
-static void
-hardware_rand64_fini (void)
-{
-}
 
 
 
@@ -134,25 +115,7 @@ writebytes (unsigned long long x, int nbytes)
 int
 main (int argc, char **argv)
 {
-  /* Check arguments.  */
-  bool valid = false;
-  long long nbytes;
-  if (argc == 2)
-    {
-      char *endptr;
-      errno = 0;
-      nbytes = strtoll (argv[1], &endptr, 10);
-      if (errno)
-	perror (argv[1]);
-      else
-	valid = !*endptr && 0 <= nbytes;
-    }
-  if (!valid)
-    {
-      fprintf (stderr, "%s: usage: %s NBYTES\n", argv[0], argv[0]);
-      return 1;
-    }
-
+  int nbytes = check(argc, argv);
   /* If there's no work to do, don't worry about which library to use.  */
   if (nbytes == 0)
     return 0;
@@ -179,17 +142,15 @@ main (int argc, char **argv)
   int wordsize = sizeof rand64 ();
   int output_errno = 0;
 
-  do
-    {
-      unsigned long long x = rand64 ();
-      int outbytes = nbytes < wordsize ? nbytes : wordsize;
-      if (!writebytes (x, outbytes))
-	{
-	  output_errno = errno;
-	  break;
-	}
-      nbytes -= outbytes;
+  do{
+    unsigned long long x = rand64 ();
+    int outbytes = nbytes < wordsize ? nbytes : wordsize;
+    if (!writebytes (x, outbytes)){
+      output_errno = errno;
+      break;
     }
+    nbytes -= outbytes;
+  }
   while (0 < nbytes);
 
   if (fclose (stdout) != 0)
