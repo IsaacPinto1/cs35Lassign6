@@ -30,7 +30,7 @@ TAREXT = tgz
 
 default: randall
 
-randall: randall.c options.c rand64-hw.c
+randall: randall.c options.c rand64-hw.c rand64-sw.c
 	$(CC) $(CFLAGS) $^ -o $@
 
 assignment: randall-assignment.$(TAREXT)

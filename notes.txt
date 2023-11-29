@@ -1,2 +1,17 @@
 Added a 'check' target to the makefile. I first set a const 'SIZE', and then run randall on that
 SIZE, and check that the output length is the same as SIZE. I counted the output using 'wc -c'
+
+Then I started to separate files
+
+I started with options, moving the first chunk of logic
+to options.c. I made options.c return nbytes, and if it was
+invalid it returns -1.
+
+I made sure to add include guards to the .h file as well.
+
+I then tested that this separation of options worked with
+make check, which it did, so I continued to separate the
+rand64-hw functions.
+
+Along the way, I modified the make file to have $^, and
+added options.c and rand64-hw.c to the prerequisite list

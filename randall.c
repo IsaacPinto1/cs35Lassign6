@@ -63,39 +63,6 @@ rdrand_supported (void)
 /* Initialize the hardware rand64 implementation.  */
 
 
-
-
-/* Software implementation.  */
-
-/* Input stream containing random bytes.  */
-static FILE *urandstream;
-
-/* Initialize the software rand64 implementation.  */
-static void
-software_rand64_init (void)
-{
-  urandstream = fopen ("/dev/random", "r");
-  if (! urandstream)
-    abort ();
-}
-
-/* Return a random value, using software operations.  */
-static unsigned long long
-software_rand64 (void)
-{
-  unsigned long long int x;
-  if (fread (&x, sizeof x, 1, urandstream) != 1)
-    abort ();
-  return x;
-}
-
-/* Finalize the software rand64 implementation.  */
-static void
-software_rand64_fini (void)
-{
-  fclose (urandstream);
-}
-
 static bool
 writebytes (unsigned long long x, int nbytes)
 {
@@ -116,7 +83,6 @@ int
 main (int argc, char **argv)
 {
   int nbytes = check(argc, argv);
-  /* If there's no work to do, don't worry about which library to use.  */
   if (nbytes == 0)
     return 0;
 
