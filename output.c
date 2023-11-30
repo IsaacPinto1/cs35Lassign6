@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include "output.h"
+#include <unistd.h>
 
 bool writebytes (unsigned long long x, int nbytes)
 {
@@ -48,4 +49,57 @@ int outputText(int (*initialize)(char *path), unsigned long long (*rand64)(void)
 
     finalize ();
     return !!output_errno;
+}
+
+
+int output_bytes(int (*initialize)(char *path), unsigned long long (*rand64)(void), void (*finalize)(void), int total_bytes, char *path, int N) {
+    if(!!initialize(path) == 1) {
+        return 1;
+    }
+    int output_errno = 0;
+
+    // Allocate a buffer for N bytes
+    char *buffer = (char *)malloc(N);
+    if (buffer == NULL) {
+        perror("Error allocating memory");
+        finalize();
+        return 1;
+    }
+
+    do {
+        unsigned long long x = rand64();
+
+        // Fill the buffer with N random bytes
+        for (int i = 0; i < N; ++i) {
+            buffer[i] = (char)(x & 0xFF);
+            x >>= 8;
+        }
+
+        // Write the buffer to stdout
+        if (write(STDOUT_FILENO, buffer, N) != N) {
+            output_errno = errno;
+            break;
+        }
+
+        total_bytes -= N;
+    } while (0 < total_bytes);
+
+    free(buffer);
+
+    // Check for errors and finalize
+    if (output_errno) {
+        errno = output_errno;
+        perror("output");
+        finalize();
+        return 1;
+    }
+
+    if (fclose(stdout) != 0) {
+        perror("Error closing stdout");
+        finalize();
+        return 1;
+    }
+
+    finalize();
+    return 0;
 }

@@ -71,26 +71,31 @@ int
 main (int argc, char **argv)
 {
   int nbytes = check(argc, argv);
-  if (nbytes == 0)
-    return 0;
-  if (nbytes < 0){
-    return 1;
-  }
+  if (nbytes <= 0)
+      return 1;
+
   int opt;
   char *input = "none";
-  //char *output = "none";
+  int output_nbytes = 0; // Variable to store the N value
+
   while ((opt = getopt(argc, argv, "i:o:")) != -1) {
-        switch (opt) {
-        case 'i':
-            input = optarg;
-            break;
-        case 'o':
-            //output = optarg;
-            break;
-        default:
-            fprintf(stderr, "Usage: %s -i input -o output\n", argv[0]);
-            exit(EXIT_FAILURE);
-        }
+      switch (opt) {
+          case 'i':
+              input = optarg;
+              break;
+          case 'o':
+              if(strcmp(optarg, "stdio") != 0){
+                output_nbytes = atoi(optarg);
+                if (output_nbytes <= 0) {
+                  fprintf(stderr, "Invalid option for -o. Must be an integer or stdio\n");
+                  return 1;
+                }
+              }
+              break;
+          default:
+              fprintf(stderr, "Usage: %s -i input -o N\n", argv[0]);
+              return 1;
+      }
   }
 
   int (*initialize) (char *path);
@@ -139,5 +144,13 @@ main (int argc, char **argv)
       return 1;
   }
 
-  return outputText(initialize, rand64, finalize, nbytes, path);
+
+  if (output_nbytes == 0) {
+      return outputText(initialize, rand64, finalize, nbytes, path);
+  } else {
+    //printf("nbytes: %d, output_nbytes: %d", nbytes, output_nbytes);
+    return output_bytes(initialize, rand64, finalize, nbytes, path, output_nbytes);
+      // Add your implementation for N bytes output
+      // output(hardware_rand64_init, hardware_rand64, hardware_rand64_fini, nbytes);
+  }
 }
