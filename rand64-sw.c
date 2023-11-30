@@ -45,7 +45,7 @@ int arc4random_init(char *path __attribute__((unused))) {
 // Function to generate a random 64-bit number using arc4random_buf
 unsigned long long arc4random_rand64(void) {
     unsigned long long result;
-    //arc4random_buf(&result, sizeof(result));
+    arc4random_buf(&result, sizeof(result));
     return result;
 }
 
