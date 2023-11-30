@@ -69,20 +69,23 @@ int output_bytes(int (*initialize)(char *path), unsigned long long (*rand64)(voi
     do {
         unsigned long long x = rand64();
 
-        // Fill the buffer with N random bytes
-        for (int i = 0; i < N; ++i) {
+        // Fill the buffer with N random bytes or the remaining bytes in the last iteration
+        int bytes_to_write = (total_bytes < N) ? total_bytes : N;
+
+        for (int i = 0; i < bytes_to_write; ++i) {
             buffer[i] = (char)(x & 0xFF);
             x >>= 8;
         }
 
         // Write the buffer to stdout
-        if (write(STDOUT_FILENO, buffer, N) != N) {
+        int bytes_written = write(STDOUT_FILENO, buffer, bytes_to_write);
+        if (bytes_written != bytes_to_write) {
             output_errno = errno;
             break;
         }
 
-        total_bytes -= N;
-    } while (0 < total_bytes);
+        total_bytes -= bytes_to_write;
+    } while (total_bytes > 0);
 
     free(buffer);
 

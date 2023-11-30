@@ -1,6 +1,8 @@
 #include "rand64-sw.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
 
 FILE *urandstream;
@@ -10,6 +12,12 @@ int software_rand64_init(char *path) {
     if (!urandstream) {
         perror("Error opening random file");
         return 1;
+    } else {
+      unsigned long long int x;
+      if (fread (&x, sizeof x, 1, urandstream) != 1){
+        fprintf(stderr, "Error reading from the given file\n");
+        return 1;
+      }
     }
     return 0;
 }
@@ -19,8 +27,7 @@ unsigned long long
 software_rand64 (void)
 {
   unsigned long long int x;
-  if (fread (&x, sizeof x, 1, urandstream) != 1)
-    abort ();
+  fread (&x, sizeof x, 1, urandstream);
   return x;
 }
 

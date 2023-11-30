@@ -71,9 +71,10 @@ int
 main (int argc, char **argv)
 {
   int nbytes = check(argc, argv);
-  if (nbytes <= 0)
+  if (nbytes <= 0){
+      fprintf(stderr, "%s: usage: %s [options] NBYTES\n", argv[0], argv[0]);
       return 1;
-
+  }
   int opt;
   char *input = "none";
   int output_nbytes = 0; // Variable to store the N value

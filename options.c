@@ -8,6 +8,7 @@
 int check(int argc, char **argv) {
     bool valid = false;
     long long nbytes = 0;
+    int numeric_arg_count = 0;
 
     for (int i = 1; i < argc; ++i) {
         if ((strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "-o") == 0) && i + 1 < argc) {
@@ -21,13 +22,12 @@ int check(int argc, char **argv) {
 
             if (errno == 0 && *endptr == '\0') {
                 valid = true;
-                break;
+                numeric_arg_count++;
             }
         }
     }
 
-    if (!valid) {
-        fprintf(stderr, "%s: usage: %s [options] NBYTES\n", argv[0], argv[0]);
+    if (!valid || numeric_arg_count != 1) {
         return -1;
     }
 
