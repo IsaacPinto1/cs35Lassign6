@@ -21,7 +21,8 @@ bool writebytes (unsigned long long x, int nbytes)
   return true;
 }
 
-int outputText(int (*initialize)(char *path), unsigned long long (*rand64)(void), void (*finalize)(void), int nbytes, char *path){
+int outputText(int (*initialize)(char *path), unsigned long long (*rand64)(void), 
+void (*finalize)(void), int nbytes, char *path){
     if(!!initialize(path) == 1){
         return 1;
     };
@@ -52,7 +53,8 @@ int outputText(int (*initialize)(char *path), unsigned long long (*rand64)(void)
 }
 
 
-int output_bytes(int (*initialize)(char *path), unsigned long long (*rand64)(void), void (*finalize)(void), int total_bytes, char *path, int N) {
+int output_bytes(int (*initialize)(char *path), unsigned long long (*rand64)(void), 
+void (*finalize)(void), int total_bytes, char *path, int N) {
     if(!!initialize(path) == 1) {
         return 1;
     }
