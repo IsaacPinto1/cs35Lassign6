@@ -1,7 +1,6 @@
 #ifndef RAND64_SW_H
 #define RAND64_SW_H
 
-#include <stdio.h>
 
 int software_rand64_init(char *path);
 unsigned long long software_rand64(void);

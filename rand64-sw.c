@@ -1,10 +1,7 @@
 #include "rand64-sw.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <errno.h>
-#include <string.h>
 #include <unistd.h>
-#include <limits.h> 
 
 
 FILE *urandstream;
