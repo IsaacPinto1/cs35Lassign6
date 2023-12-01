@@ -18,3 +18,37 @@ added options.c and rand64-hw.c to the prerequisite list
 
 I continued to separate the software and output files, and
 my 'make check' ran successfully.
+
+Once all the code was properly separated, I began working on the -i and -o options,
+using getopt()
+
+I decided to start with the -i options
+
+The -i rdrand option was pretty easy, I just made the code check whether no -i option had been
+set OR -i rdrand, and if so it would then check if rdrand is supported. If it is, I set it
+to the hardware implementation, otherwise it crashes
+
+Then, to implement the file path option, I checked if the first character of the -i option was '/',
+and if it was I set the init, rand, and fin functions to the software options. In my output function, I 
+pass in a 'path' string to the software init function, which defaults to /dev/null. This allowed me to
+access any file specified by the -i /F option
+
+I then began working on the -o option while the arc4random_buf issue was being resolved.
+
+I processed the options the same way as -i, and if it was an integer, I called a separate output function,
+'output_bytes'. In this function, I allocated a buffer of size -o N, and then filled it up with the random
+bytes from rand64(). Initially, rand64() was only generating 8 bytes, so if I used an N larger than 8 bytes
+I'd get trailing empty bytes, however I fixed this by generating a new random 8 bytes after every iteration
+of my loop to fill up the buffer. I would then write that buffer to stdout all at once, so the bytes are written
+N at a time.
+
+Later, I implemented the lrand48 option. I used pid() to seed the lrand48 to get a random value every time. Also,
+to make sure I was returning 8 bytes from the lrand48_rand64() function, I generated two random integers (4 bytes each)
+and concatenated them by left shifting one of them to fit the other one in.
+
+Once this was done, I tested my program using both strace and valgrind. Valgrind showed I had no errors/memory leaks (which is a 
+concern when using the -o N option since I am allocating memory for the buffer). strace showed that I was indeed writing N bytes at a time.
+
+Next, I wrote some extra tests into my 'make check', including exiting with code 1 on invalid input.
+
+Finally, I made sure the formatting (all ASCII no carriage returns) was correct
