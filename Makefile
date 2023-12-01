@@ -21,7 +21,7 @@ OPTIMIZE =
 # The C compiler and its options.
 CC = gcc
 CFLAGS = $(OPTIMIZE) -g3 -Wall -Wextra \
-  -march=native -mtune=native -mrdrnd
+  -march=native -mtune=native -mrdrnd -fanalyzer
 
 # The archiver command, its options and filename extension.
 TAR = tar
