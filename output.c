@@ -67,14 +67,13 @@ int output_bytes(int (*initialize)(char *path), unsigned long long (*rand64)(voi
     }
 
     do {
-        unsigned long long x = rand64();
 
         // Fill the buffer with N random bytes or the remaining bytes in the last iteration
         int bytes_to_write = (total_bytes < N) ? total_bytes : N;
 
         for (int i = 0; i < bytes_to_write; ++i) {
+            unsigned long long x = rand64();
             buffer[i] = (char)(x & 0xFF);
-            x >>= 8;
         }
 
         // Write the buffer to stdout

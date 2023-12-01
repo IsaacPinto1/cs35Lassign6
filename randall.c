@@ -106,35 +106,20 @@ main (int argc, char **argv)
   char *path = "";
 
   // Check the input option
-  if(strcmp(input, "none") == 0){
+  if(strcmp(input, "none") == 0 || strcmp(input, "rdrand") == 0){
     if (rdrand_supported ())
     {
       initialize = hardware_rand64_init;
       rand64 = hardware_rand64;
       finalize = hardware_rand64_fini;
     } else{
-      initialize = software_rand64_init;
-      rand64 = software_rand64;
-      finalize = software_rand64_fini;
-      path = "/dev/null";
-    }
-  }
-  else if (strcmp(input, "rdrand") == 0) {
-      if (rdrand_supported ())
-    {
-      initialize = hardware_rand64_init;
-      rand64 = hardware_rand64;
-      finalize = hardware_rand64_fini;
-    }
-  else
-    {
       fprintf(stderr, "rdrand not available\n");
       return 1;
     }
-  } else if (strcmp(input, "arc4random_buf") == 0) {
-      initialize = arc4random_init;
-      rand64 = arc4random_rand64;
-      finalize = arc4random_fini;
+  } else if (strcmp(input, "lrand48_r") == 0) {
+      initialize = lrand48_init;
+      rand64 = lrand48_rand64;
+      finalize = lrand48_fini;
   } else if (input[0] == '/') {
       initialize = software_rand64_init;
       rand64 = software_rand64;
