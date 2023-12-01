@@ -12,8 +12,8 @@ FILE *urandstream;
 int software_rand64_init(char *path) {
     urandstream = fopen(path, "r");
     if (!urandstream) {
-        perror("Error opening random file");
-        return 1;
+      fprintf(stderr, "Error opening file\n");
+      return 1;
     } else {
       unsigned long long int x;
       if (fread (&x, sizeof x, 1, urandstream) != 1){

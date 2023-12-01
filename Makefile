@@ -21,7 +21,7 @@ OPTIMIZE =
 # The C compiler and its options.
 CC = gcc
 CFLAGS = $(OPTIMIZE) -g3 -Wall -Wextra \
-  -march=native -mtune=native -mrdrnd -fanalyzer
+  -march=native -mtune=native -mrdrnd
 
 # The archiver command, its options and filename extension.
 TAR = tar
@@ -34,7 +34,7 @@ randall: randall.c options.c rand64-hw.c rand64-sw.c output.c
 	$(CC) $(CFLAGS) $^ -o $@
 
 assignment: randall-assignment.$(TAREXT)
-assignment-files = COPYING Makefile randall.c
+assignment-files = COPYING Makefile randall.c *.h *.c *.sh
 randall-assignment.$(TAREXT): $(assignment-files)
 	$(TAR) $(TARFLAGS) -cf $@ $(assignment-files)
 
@@ -54,12 +54,5 @@ clean:
 	
 # Check:
 
-SIZE=52
-
-check:
-	@length=$$(./randall $(SIZE) | wc -c); \
-	if [ "$$length" -eq $(SIZE) ]; then \
-		echo "Test passed!"; \
-	else \
-		echo "Test failed!"; \
-	fi
+check: randall
+	@./test.sh
