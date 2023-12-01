@@ -55,3 +55,65 @@ the buffer). strace showed that I was indeed writing N bytes at a time.
 Next, I wrote some extra tests into my 'make check', including exiting with code 1 on invalid input.
 
 Finally, I made sure the formatting (all ASCII no carriage returns) was correct
+
+
+Timing results:
+
+time dd if=/dev/urandom ibs=8192 obs=8192 count=16384 >/dev/null:
+    real    0m0.708s
+    user    0m0.001s
+    sys     0m0.608s
+
+time ./randall 133562368 >/dev/null
+
+    real    0m1.426s
+    user    0m1.362s
+    sys     0m0.016s
+
+time ./randall 133562368 | cat >/dev/null
+
+    real    0m1.870s
+    user    0m1.662s
+    sys     0m0.321s
+
+time ./randall 133562368 >rand.data
+
+    real    0m3.417s
+    user    0m1.853s
+    sys     0m1.021s
+
+time ./randall 133562368 -i /dev/random >/dev/null
+
+    real    0m1.449s
+    user    0m0.934s
+    sys     0m0.508s
+
+time ./randall 133562368 -i /dev/zero >/dev/null
+
+    real    0m0.975s
+    user    0m0.947s
+    sys     0m0.021s
+
+time ./randall 133562368 -i /dev/urandom >/dev/null
+
+    real    0m1.701s
+    user    0m1.182s
+    sys     0m0.481s
+
+time ./randall 133562368 -o 4096 >/dev/null
+
+    real    0m3.779s
+    user    0m3.700s
+    sys     0m0.030s
+
+time ./randall 133562368 -i /dev/urandom -o stdio >/dev/null
+
+    real    0m1.637s
+    user    0m1.094s
+    sys     0m0.443s
+
+time ./randall 133562368 -i /dev/random -o 4096 >/dev/null
+
+    real    0m5.511s
+    user    0m1.626s
+    sys     0m3.797s
