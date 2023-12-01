@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h> 
 
 
 FILE *urandstream;
@@ -51,13 +52,13 @@ int lrand48_init(char *path __attribute__((unused))) {
 }
 
 unsigned long long lrand48_rand64(void) {
-    // Generate a 32-bit random number using lrand48
-    unsigned long rand32 = lrand48();
+    unsigned long rand32_1 = lrand48();
+    unsigned long rand32_2 = lrand48();
 
-    // Extend to 64 bits
-    //unsigned long long rand64 = (unsigned long long)rand32;
+    // Combine them to form a 64-bit random number
+    unsigned long long rand64 = ((unsigned long long)rand32_1 << 32) | rand32_2;
 
-    return rand32;
+    return rand64;
 }
 
 void lrand48_fini(void) {
