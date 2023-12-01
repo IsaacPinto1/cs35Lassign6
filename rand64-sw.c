@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <unistd.h>
 
 
 FILE *urandstream;
@@ -38,18 +39,27 @@ software_rand64_fini (void)
   fclose (urandstream);
 }
 
-int arc4random_init(char *path __attribute__((unused))) {
-    // Your initialization code here
+
+
+
+
+int lrand48_init(char *path __attribute__((unused))) {
+    // Seed the random number generator
+    srand48((long)getpid());  // You may want to use a different seed value
+
+    return 0;
 }
 
-// Function to generate a random 64-bit number using arc4random_buf
-unsigned long long arc4random_rand64(void) {
-    unsigned long long result;
-    //arc4random_buf(&result, sizeof(result));
-    return result;
+unsigned long long lrand48_rand64(void) {
+    // Generate a 32-bit random number using lrand48
+    unsigned long rand32 = lrand48();
+
+    // Extend to 64 bits
+    //unsigned long long rand64 = (unsigned long long)rand32;
+
+    return rand32;
 }
 
-// Function to finalize arc4random
-void arc4random_fini(void) {
-    // Your finalization code here
+void lrand48_fini(void) {
+    // No specific finalization needed for lrand48
 }
